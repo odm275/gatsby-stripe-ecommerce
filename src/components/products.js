@@ -19,6 +19,14 @@ const PRODUCTS_QUERY = graphql`
         }
       }
     }
+    allStripeProduct {
+      edges {
+        node {
+          name
+          id
+        }
+      }
+    }
   }
 `
 
@@ -26,9 +34,15 @@ const Products = () => {
   return (
     <StaticQuery
       query={PRODUCTS_QUERY}
-      render={({ allStripeSku }) => {
-        //ToDo
-        return <Product />
+      render={({ allStripeSku, allStripeProduct }) => {
+        allStripeProduct.edges.map(product => {
+          const skus = allStripeSku.edges.filter(
+            sku => sku.node.product.id === product.node.id
+          )
+          return (
+            <Product key={product.node.id} skus={skus} product={product.node} />
+          )
+        })
       }}
     />
   )
